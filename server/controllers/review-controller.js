@@ -209,64 +209,6 @@ const reviewController = {
       next(error);
     }
   },
-
-  getReviewById: async (req, res, next) => {
-    try {
-      const { reviewId } = req.params;
-      const userId = req.userID;
-
-      const review = await Review.findOne({
-        _id: reviewId,
-        userId: userId,
-      });
-
-      if (!review) {
-        return res.status(404).json({
-          success: false,
-          message: "Review not found",
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        review,
-      });
-    } catch (error) {
-      console.error("Get review by ID error:", error);
-      next(error);
-    }
-  },
-
-  deleteReview: async (req, res, next) => {
-    try {
-      const { reviewId } = req.params;
-      const userId = req.userID;
-
-      const deletedReview = await Review.findOneAndDelete({
-        _id: reviewId,
-        userId: userId,
-      });
-
-      if (!deletedReview) {
-        return res.status(404).json({
-          success: false,
-          message: "Review not found",
-        });
-      }
-
-      await User.findByIdAndUpdate(userId, {
-        $inc: { resumeReviewsCount: -1 },
-      });
-
-      res.status(200).json({
-        success: true,
-        message: "Review deleted successfully",
-      });
-    } catch (error) {
-      console.error("Delete review error:", error);
-      next(error);
-    }
-  },
 };
 
 export default reviewController;
