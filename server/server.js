@@ -59,12 +59,18 @@ const PORT = process.env.PORT || 4000;
 const uri = process.env.MONGODB_URI;
 
 // Serve static React build first
-app.use(express.static(path.join(__dirname, "../client/dist")));
+if (process.env.NODE_ENV === "production") {
+  const buildPath = path.join(__dirname, "../client/dist");
 
-// Regex catch-all for React routing
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-});
+  // Serve the assets folder correctly
+  app.use('/assets', express.static(path.join(buildPath, "assets")));
+
+  // Serve index.html for all other routes
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
+}
+
 
 connectDB(uri).then(() => {
   app.listen(PORT, () => {
