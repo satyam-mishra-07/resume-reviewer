@@ -60,13 +60,20 @@ const PORT = process.env.PORT || 4000;
 
 const uri = process.env.MONGODB_URI;
 
-if(process.env.NODE_ENV==="production"){
-  app.use(express.static(path.join(__dirname, "../client/dist")))
+if(process.env.NODE_ENV === "production"){
+  const buildPath = path.join(__dirname, "../client/dist");
+  
+  console.log("Serving static files from:", buildPath); // Debug log
+  
+  // ✅ Serve static files FIRST
+  app.use(express.static(buildPath));
 
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"))
-  })
+  // ✅ Use string path (not regex) for catch-all
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
 }
+
 
 connectDB(uri).then(() => {
   app.listen(PORT, () => {
