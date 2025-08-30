@@ -13,7 +13,7 @@ app.use(cors({
   origin: [
     "http://localhost:3000", 
     "http://localhost:5173",
-    "https://resume-reviewer-chi.vercel.app/"
+    "https://resume-reviewer-kappa.vercel.app/"
   ],
   credentials: true
 }));
