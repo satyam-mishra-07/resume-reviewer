@@ -4,7 +4,7 @@ import axios from 'axios';
 export const axiosInstance = axios.create({
   baseURL: import.meta.env.MODE === 'development' 
     ? 'http://localhost:4000'  // Local development
-    : 'https://resume-reviewer-1-1zrs.onrender.com/', // Your Render backend URL
+    : 'https://resume-reviewer-1-1zrs.onrender.com', // Your Render backend URL
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
