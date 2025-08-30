@@ -14,7 +14,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   
   return (
-    <Router>
+    <Router basename="/">
       <div className="app"> {/* Add this wrapper with flexbox */}
         <Navbar />
         
