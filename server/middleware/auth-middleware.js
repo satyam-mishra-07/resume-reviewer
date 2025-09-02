@@ -11,7 +11,13 @@ const authMiddleware = async (req, res, next) => {
         .json({ message: "Unauthorized: Token not provided" });
     }
 
-    const jwtToken = token.replace("Bearer", "").trim();
+    // ✅ Fix: Properly remove "Bearer " (with space)
+    const jwtToken = token.replace("Bearer ", "").trim();
+    
+    // ✅ Add debug logging (remove later)
+    console.log("Token received:", token);
+    console.log("JWT after cleaning:", jwtToken);
+    
     const isVerified = jwt.verify(jwtToken, process.env.JWT_SECRET);
 
     const userData = await User.findOne({ email: isVerified.email }).select("-password");
