@@ -7,6 +7,10 @@ export default function Register() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  // Add missing state variables for password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
