@@ -73,7 +73,7 @@ const reviewController = {
           formData,
           {
             headers: formData.getHeaders(),
-            timeout: 60000,
+            timeout: 180000,
           }
         );
         

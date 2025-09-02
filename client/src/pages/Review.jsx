@@ -128,7 +128,7 @@ export default function Review({ isLoading, setIsLoading }) {
           // ✅ Removed Content-Type - let axios handle it
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        timeout: 60000, // ✅ Added timeout for AI processing
+        timeout: 180000, // ✅ Added timeout for AI processing
       }
     );
 
