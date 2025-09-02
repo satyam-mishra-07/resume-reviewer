@@ -52,14 +52,31 @@ const reviewController = {
         formData.append("resume_text", resumeData.trim());
       }
 
+      try{
       hfResponse = await axios.post(
         "https://howler3212-resume-reviewer.hf.space/review",
         formData,
         {
           headers: formData.getHeaders(),
-          timeout: 30000,
+          timeout: 60000,
         }
       );
+    } catch (hfError) {
+        // ✅ Handle HF API errors properly
+        console.error("❌ HF API Error:", {
+          status: hfError.response?.status,
+          statusText: hfError.response?.statusText,
+          data: hfError.response?.data,
+          message: hfError.message
+        });
+
+        return res.status(500).json({
+          success: false,
+          message: "AI analysis service temporarily unavailable",
+          error: hfError.response?.data?.error || hfError.message,
+          details: hfError.response?.data?.details || "Please try again later"
+        });
+      }
 
       const analysisResult = hfResponse.data;
 
