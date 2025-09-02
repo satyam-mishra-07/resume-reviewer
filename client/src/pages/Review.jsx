@@ -96,59 +96,63 @@ export default function Review({ isLoading, setIsLoading }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!formData.jd.trim()) {
-      toast.error("Please enter a job description");
-      return;
+  if (!formData.jd.trim()) {
+    toast.error("Please enter a job description");
+    return;
+  }
+
+  if (!formData.resume) {
+    toast.error("Please provide your resume");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const dataToSend = new FormData();
+    dataToSend.append("jd", formData.jd.trim());
+
+    if (inputType === "upload" && formData.resume instanceof File) {
+      dataToSend.append("resume_pdf", formData.resume); // ✅ Fixed field name
+    } else {
+      dataToSend.append("resume_text", formData.resume.trim()); // ✅ Fixed field name
     }
 
-    if (!formData.resume) {
-      toast.error("Please provide your resume");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const dataToSend = new FormData();
-      dataToSend.append("jd", formData.jd.trim());
-
-      if (inputType === "upload" && formData.resume instanceof File) {
-        dataToSend.append("resume", formData.resume);
-      } else {
-        dataToSend.append("resume", formData.resume.trim());
+    const response = await axiosInstance.post(
+      "/api/review/analyze",
+      dataToSend,
+      {
+        headers: {
+          // ✅ Removed Content-Type - let axios handle it
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        timeout: 60000, // ✅ Added timeout for AI processing
       }
+    );
 
-      const response = await axiosInstance.post(
-        "/api/review/analyze",
-        dataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+    const analysisData = response.data.analysis || response.data; // ✅ Flexible response handling
+    
+    setAnalysis(analysisData);
+    setShowResults(true);
+    toast.success("Resume analyzed successfully!");
+    
+  } catch (error) {
+    console.error("Analysis error:", error);
 
-      // Axios automatically parses JSON
-      const data = response.data;
-
-      setAnalysis(data.analysis);
-      setShowResults(true);
-      toast.success("Resume analyzed successfully!");
-    } catch (error) {
-      console.error("Analysis error:", error);
-
-      if (error.response && error.response.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong during analysis");
-      }
-    } finally {
-      setIsLoading(false);
+    if (error.response?.data?.error) {
+      toast.error(error.response.data.error);
+    } else if (error.response?.data?.message) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error("Analysis failed. Please try again.");
     }
-  };
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleSampleData = () => {
     setFormData({
